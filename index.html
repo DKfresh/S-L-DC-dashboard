@@ -747,8 +747,14 @@
     DAILY.sort(function(a,b){ return a._t - b._t; });
     var minDate = DAILY[0].d, maxDate = DAILY[DAILY.length-1].d;
     var uniqWeeks = Array.from(new Set(DAILY.map(function(d){ return d.wk; }))).sort();
-    var lastFullWeek = uniqWeeks[uniqWeeks.length-2];
-    var wtdWeek = uniqWeeks[uniqWeeks.length-1];
+    var weekDayCounts = {};
+    DAILY.forEach(function(d){ weekDayCounts[d.wk] = (weekDayCounts[d.wk]||0) + 1; });
+    var lastFullWeek = uniqWeeks[uniqWeeks.length-1];
+    for (var wi = uniqWeeks.length-1; wi >= 0; wi--) {
+      if (weekDayCounts[uniqWeeks[wi]] >= 5) { lastFullWeek = uniqWeeks[wi]; break; }
+    }
+    var lfIdx = uniqWeeks.indexOf(lastFullWeek);
+    var wtdWeek = (lfIdx < uniqWeeks.length-1) ? uniqWeeks[lfIdx+1] : lastFullWeek;
 
     var startInput = document.getElementById('rangeStart');
     var endInput = document.getElementById('rangeEnd');
